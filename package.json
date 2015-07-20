@@ -1,0 +1,11 @@
+{
+  "name": "Workfllows",
+  "version": "0.0.1",
+  "description": "Testowy system automatyzacji zadań",
+  "repository": {
+    "type": "git",
+    "url": "?.git"
+  },
+  "author": "Kuba",
+  "license": "ISC"
+}
