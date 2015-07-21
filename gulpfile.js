@@ -5,6 +5,7 @@ var gulp = require('gulp'),
 	gutil = require('gulp-util'), //dodatkowe narzędzia jak log
 	coffee = require('gulp-coffee'),
 	browserify = require('gulp-browserify'),
+	compass = require('gulp-compass'),
 	concat  = require('gulp-concat'),
 	minify = require('gulp-uglify');
 
@@ -21,7 +22,9 @@ var coffeeSources = [
 	'components/scripts/pixgrid.js',
 	'components/scripts/tagline.js',
 	'components/scripts/template.js'
-	];
+	],
+
+	sassSources = ['components/sass/style.scss'];
 
 //Proste logowanie
 gulp.task('log', function () {
@@ -43,4 +46,16 @@ gulp.task('js', function () {
 	.pipe(browserify())
 	.pipe(gulp.dest('builds/development/js'))
 	// .pipe(minify())
+});
+
+//Sass do CSS
+gulp.task('sass', function () {
+	gulp.src(sassSources)
+	.pipe(compass({
+		sass: 'components/sass/',
+		image:'builds/development/images',
+		style: 'compact'
+	})
+	.on('error', gutil.log))
+	.pipe(gulp.dest('builds/development/css'))
 });
