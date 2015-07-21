@@ -40,7 +40,7 @@ gulp.task('coffee', function () {
 });
 
 //Łączenie JS
-gulp.task('js', function () {
+gulp.task('js',function () {
 	gulp.src(jsSources)
 	.pipe(concat('script.js'))
 	.pipe(browserify())
@@ -58,4 +58,20 @@ gulp.task('sass', function () {
 	})
 	.on('error', gutil.log))
 	.pipe(gulp.dest('builds/development/css'))
+});
+
+
+/**
+ * Default task
+ */
+gulp.task('default', ['coffee', 'js', 'sass']);
+
+
+/**
+ * Watch task
+ */
+gulp.task('watch', function () {
+	gulp.watch(coffeeSources, ['coffee', 'js']);
+	gulp.watch(jsSources, ['js']);
+	gulp.watch('components/sass/*.scss', ['sass']);
 });
