@@ -64,7 +64,7 @@ gulp.task('sass', function () {
 /**
  * Default task
  */
-gulp.task('default', ['coffee', 'js', 'sass']);
+gulp.task('default', ['coffee', 'js', 'sass', 'watch']);
 
 
 /**
