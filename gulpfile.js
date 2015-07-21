@@ -25,7 +25,11 @@ var coffeeSources = [
 	'components/scripts/template.js'
 	],
 
-	sassSources = ['components/sass/style.scss'];
+	sassSources = ['components/sass/style.scss'],
+
+	htmlSources = ['builds/development/*.html'],
+
+	jsonSources = ['builds/development/js/*.json'];
 
 //Proste logowanie
 gulp.task('log', function () {
@@ -71,17 +75,58 @@ gulp.task('connect', function () {
 	});
 });
 
-/**
- * Default task
- */
-gulp.task('default', ['coffee', 'js', 'sass', 'connect', 'watch']);
+//Html
+gulp.task('html', function () {
+	gulp.src(htmlSources)
+	.pipe(connect.reload())
+});
+
+//JSON
+gulp.task('json', function () {
+	gulp.src(jsonSources)
+	.pipe(connect.reload())
+});
+
+
+// ////////////////////////////////////////////////
+// Build Task
+// // /////////////////////////////////////////////
+//usuwa wszystko za katalogu build
+gulp.task('build:cleanfolder', function(callback) {
+	del([
+		'build/**'
+	], callback);
+});
+
+//buduje katalog na wszystkie pliki
+gulp.task('build:copy' , ['build:cleanfolder'],  function(){
+	return gulp.src('app/**/*')
+	.pipe(gulp.dest('build'));
+});
+
+//usuwa niepotrzebe pliki z katalogu build
+gulp.task('build:remove' ,['build:copy'] ,function(callback) {
+	del([
+		'build/styles/',
+		'build/js/!(*.min.js)'
+		], callback);
+});
+
+gulp.task('build', ['build:copy', 'build:remove']);
 
 
 /**
  * Watch task
  */
 gulp.task('watch', function () {
-	gulp.watch(coffeeSources, ['coffee', 'js']);
+	gulp.watch(htmlSources, ['html']);
+	gulp.watch(jsonSources, ['json']);
+	gulp.watch(coffeeSources, ['coffee']);
 	gulp.watch(jsSources, ['js']);
 	gulp.watch('components/sass/*.scss', ['sass']);
 });
+
+/**
+ * Default task
+ */
+gulp.task('default', ['html','json', 'coffee', 'js', 'sass', 'connect', 'watch']);
