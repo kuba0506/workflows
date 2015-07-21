@@ -4,6 +4,7 @@
 var gulp = require('gulp'),
 	gutil = require('gulp-util'), //dodatkowe narzędzia jak log
 	coffee = require('gulp-coffee'),
+	browserify = require('gulp-browserify'),
 	concat  = require('gulp-concat'),
 	minify = require('gulp-uglify');
 
@@ -39,6 +40,7 @@ gulp.task('coffee', function () {
 gulp.task('js', function () {
 	gulp.src(jsSources)
 	.pipe(concat('script.js'))
-	.pipe(minify())
+	.pipe(browserify())
 	.pipe(gulp.dest('builds/development/js'))
+	// .pipe(minify())
 });
