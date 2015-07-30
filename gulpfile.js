@@ -11,9 +11,44 @@ var gulp = require('gulp'),
 	minify = require('gulp-uglify');
 
 /**
+ * Deklaracja zmienny odzielona od inicjalizacji
+ * aby później można ich użyć warunkowo, np. outputDir
+ */
+var env,
+	coffeeSources,
+	jsSources,
+	sassSources,
+	htmlSources,
+	jsonSources,
+	outputDir,
+	sassStyle;
+
+/**
+ * Zmienna środowiskowa ustalenie czy pracujemy nad 
+ * 'development' czy 'production'
+ * NODE_ENV=production gulp - odpalenie jako produkcja
+ * w Windows:
+ * SET NODE_ENV=production
+ * gulp
+ */
+env = process.env.NODE_ENV || 'development';
+
+/**
+ * Wybór środowiska pracy
+ */
+
+if (env === 'development')  {
+	outputDir = 'builds/development/';
+	sassStyle = 'compact';
+} else {
+	outputDir = 'builds/production/';
+	sassStyle = 'compressed';
+}
+
+/**
  * Sources
  */
-var coffeeSources = [
+	coffeeSources = [
 	'components/coffee/*.coffee',
 	'components/scripts'
 	],
@@ -27,9 +62,9 @@ var coffeeSources = [
 
 	sassSources = ['components/sass/style.scss'],
 
-	htmlSources = ['builds/development/*.html'],
+	htmlSources = [ outputDir + '*.html'],
 
-	jsonSources = ['builds/development/js/*.json'];
+	jsonSources = [ outputDir + 'js/*.json'];
 
 //Proste logowanie
 gulp.task('log', function () {
@@ -49,7 +84,7 @@ gulp.task('js',function () {
 	gulp.src(jsSources)
 	.pipe(concat('script.js'))
 	.pipe(browserify())
-	.pipe(gulp.dest('builds/development/js'))
+	.pipe(gulp.dest(outputDir + 'js'))
 	.pipe(connect.reload())
 	// .pipe(minify())
 });
@@ -59,18 +94,18 @@ gulp.task('sass', function () {
 	gulp.src(sassSources)
 	.pipe(compass({
 		sass: 'components/sass/',
-		image:'builds/development/images',
-		style: 'compact'
+		image: outputDir + 'images',
+		style: sassStyle
 	})
 	.on('error', gutil.log))
-	.pipe(gulp.dest('builds/development/css'))
+	.pipe(gulp.dest(outputDir + 'css'))
 	.pipe(connect.reload())
 });
 
 //Serwer - connect
 gulp.task('connect', function () {
 	connect.server({
-		root: 'builds/development/',
+		root: outputDir,
 		livereload: true
 	});
 });
@@ -92,27 +127,30 @@ gulp.task('json', function () {
 // Build Task
 // // /////////////////////////////////////////////
 //usuwa wszystko za katalogu build
-gulp.task('build:cleanfolder', function(callback) {
-	del([
-		'build/**'
-	], callback);
-});
+// gulp.task('build:cleanfolder', function(callback) {
+// 	del([
+// 		'build/**'
+// 	], callback);
+// });
 
-//buduje katalog na wszystkie pliki
-gulp.task('build:copy' , ['build:cleanfolder'],  function(){
-	return gulp.src('app/**/*')
-	.pipe(gulp.dest('build'));
-});
+// //buduje katalog na wszystkie pliki
+// gulp.task('build:copy' , ['build:cleanfolder'],  function(){
+// 	return gulp.src('app/**/*')
+// 	.pipe(gulp.dest('build'));
+// });
 
-//usuwa niepotrzebe pliki z katalogu build
-gulp.task('build:remove' ,['build:copy'] ,function(callback) {
-	del([
-		'build/styles/',
-		'build/js/!(*.min.js)'
-		], callback);
-});
+// //usuwa niepotrzebe pliki z katalogu build
+// gulp.task('build:remove' ,['build:copy'] ,function(callback) {
+// 	del([
+// 		'build/styles/',
+// 		'build/js/!(*.min.js)'
+// 		], callback);
+// });
 
-gulp.task('build', ['build:copy', 'build:remove']);
+// gulp.task('build', ['build:copy', 'build:remove']);
+
+
+
 
 
 /**
